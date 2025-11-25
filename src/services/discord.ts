@@ -104,20 +104,20 @@ function createCycleEmbed(cycle: CycleInfo): DiscordEmbed {
     earth_night: 'https://www-static.warframe.com/uploads/thumbnails/c52f54dd9f6a2cc704f04f590a0512f1_1600x900.jpg', // Plaines de nuit
     earth_day: 'https://images.steamusercontent.com/ugc/931551292831672419/2A30C4AB354C9DABBC4D9D6EFDF70400B20952DD/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true', // Plaines de jour
     // Cambion Drift (Deimos)
-    cambion_night: 'https://static.wikia.nocookie.net/warframe/images/9/9b/Cambion_Drift_Vome.jpg', // Cycle Vome (nuit)
-    cambion_day: 'https://static.wikia.nocookie.net/warframe/images/8/8a/Cambion_Drift_Fass.jpg', // Cycle Fass (jour)
+    cambion_night: 'https://static.wikia.nocookie.net/warframe/images/1/11/VomeWyrm.png/revision/latest?cb=20230913133813&path-prefix=fr', // Cycle Vome (nuit)
+    cambion_day: 'https://static.wikia.nocookie.net/warframe/images/e/e1/FassWyrm.png/revision/latest/scale-to-width-down/1000?cb=20230913133745&path-prefix=fr', // Cycle Fass (jour)
   };
   
   // Miniatures pour les embeds (petites icônes)
   const thumbnails = {
-    cetus_night: 'https://i.imgur.com/GzQvWmL.png', // Icône nuit
-    cetus_day: 'https://i.imgur.com/3BqVZrI.png', // Icône jour
-    vallis_cold: 'https://i.imgur.com/GzQvWmL.png', // Icône froid
-    vallis_warm: 'https://i.imgur.com/3BqVZrI.png', // Icône chaud
-    earth_night: 'https://i.imgur.com/GzQvWmL.png', // Icône nuit
-    earth_day: 'https://i.imgur.com/3BqVZrI.png', // Icône jour
-    cambion_night: 'https://i.imgur.com/GzQvWmL.png', // Icône Vome
-    cambion_day: 'https://i.imgur.com/3BqVZrI.png', // Icône Fass
+    cetus_night: 'https://static.wikia.nocookie.net/warframe/images/2/28/CephalonIconLightGold.png/revision/latest?cb=20150212031821&path-prefix=fr', // Icône nuit
+    cetus_day: 'https://static.wikia.nocookie.net/warframe/images/2/28/CephalonIconLightGold.png/revision/latest?cb=20150212031821&path-prefix=fr', // Icône jour
+    vallis_cold: 'https://static.wikia.nocookie.net/warframe/images/2/28/CephalonIconLightGold.png/revision/latest?cb=20150212031821&path-prefix=fr', // Icône froid
+    vallis_warm: 'https://static.wikia.nocookie.net/warframe/images/2/28/CephalonIconLightGold.png/revision/latest?cb=20150212031821&path-prefix=fr', // Icône chaud
+    earth_night: 'https://static.wikia.nocookie.net/warframe/images/2/28/CephalonIconLightGold.png/revision/latest?cb=20150212031821&path-prefix=fr', // Icône nuit
+    earth_day: 'https://static.wikia.nocookie.net/warframe/images/2/28/CephalonIconLightGold.png/revision/latest?cb=20150212031821&path-prefix=fr', // Icône jour
+    cambion_night: 'https://static.wikia.nocookie.net/warframe/images/2/28/CephalonIconLightGold.png/revision/latest?cb=20150212031821&path-prefix=fr', // Icône Vome
+    cambion_day: 'hhttps://static.wikia.nocookie.net/warframe/images/2/28/CephalonIconLightGold.png/revision/latest?cb=20150212031821&path-prefix=fr', // Icône Fass
   };
   
   // Mapper les états de Vallis (day=warm, night=cold)
