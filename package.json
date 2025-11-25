@@ -9,7 +9,7 @@
     "build": "tsc",
     "deploy": "vercel --prod",
     "type-check": "tsc --noEmit",
-    "check": "node dist/check-cycles.js",
+    "check": "node dist/src/check-cycles.js",
     "check:local": "npm run build && npm run check"
   },
   "keywords": [

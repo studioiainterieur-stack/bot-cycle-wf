@@ -4,9 +4,10 @@
  * This runs via GitHub Actions instead of Vercel cron
  */
 
-import { fetchAllCycles } from './src/services/warframe.js';
-import { checkAndNotifyCycleChanges, initializeCycleTracker } from './src/utils/cycle-tracker.js';
-import { validateConfig } from './src/config.js';
+import { fetchAllCycles } from './services/warframe.js';
+import { checkAndNotifyCycleChanges, initializeCycleTracker } from './utils/cycle-tracker.js';
+import { validateConfig } from './config.js';
+import { CycleInfo } from './types/index.js';
 
 /**
  * Main function to check cycles
@@ -29,7 +30,7 @@ async function main() {
     const cycles = await fetchAllCycles();
     
     console.log(`📊 Fetched ${cycles.length} cycles:`, 
-      cycles.map(c => `${c.id}=${c.state}`).join(', ')
+      cycles.map((c: CycleInfo) => `${c.id}=${c.state}`).join(', ')
     );
     
     // Check for changes and send notifications
