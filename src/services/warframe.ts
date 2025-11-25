@@ -12,8 +12,13 @@ import { WARFRAMESTAT_API } from '../config.js';
  */
 export async function fetchAllCycles(): Promise<CycleInfo[]> {
   try {
-    // Fetch data from WarframeStat API
-    const response = await fetch(WARFRAMESTAT_API);
+    // Fetch data from WarframeStat API with proper headers
+    const response = await fetch(WARFRAMESTAT_API, {
+      headers: {
+        'User-Agent': 'Warframe-Cycle-Bot/1.0 (Discord Bot)',
+        'Accept': 'application/json',
+      },
+    });
     
     if (!response.ok) {
       throw new Error(`API request failed: ${response.status} ${response.statusText}`);
