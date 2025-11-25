@@ -14,6 +14,8 @@ on:
 jobs:
   check-cycles:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # ← AJOUTER CETTE LIGNE
     
     steps:
       # Checkout the repository code
@@ -58,4 +60,3 @@ jobs:
           git add .cycle-states.json
           git diff --quiet && git diff --staged --quiet || git commit -m "Update cycle states [skip ci]"
           git push
-
