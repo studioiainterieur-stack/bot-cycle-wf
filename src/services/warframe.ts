@@ -129,26 +129,26 @@ function formatTimeLeft(seconds: number): string {
 }
 
 /**
- * Get short description for location and state
- * Used in Discord embeds
+ * Obtenir une courte description pour un lieu et son état
+ * Utilisé dans les embeds Discord
  */
 function getShortDescription(location: LocationType, isDay: boolean): string {
   const descriptions: Record<LocationType, { day: string; night: string }> = {
     cetus: {
-      day: 'Day time in the Plains',
-      night: 'Night time - Eidolons active!',
+      day: 'C\'est le jour dans les Plaines',
+      night: 'C\'est la nuit - Les Eidolons sont actifs !',
     },
     vallis: {
-      day: 'Warm cycle in Orb Vallis',
-      night: 'Cold cycle in Orb Vallis',
+      day: 'Cycle chaud dans Orb Vallis',
+      night: 'Cycle froid dans Orb Vallis',
     },
     cambion: {
-      day: 'Fass cycle - Wyrm tokens',
-      night: 'Vome cycle - Fass tokens',
+      day: 'Cycle Fass - Jetons Wyrm disponibles',
+      night: 'Cycle Vome - Jetons Fass disponibles',
     },
     earth: {
-      day: 'Day time on Earth',
-      night: 'Night time on Earth',
+      day: 'C\'est le jour sur Terre',
+      night: 'C\'est la nuit sur Terre',
     },
   };
   

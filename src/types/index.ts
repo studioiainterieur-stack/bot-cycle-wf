@@ -70,12 +70,12 @@ export const EMBED_COLORS = {
   info: 0x5865F2, // Discord blue for info
 } as const;
 
-// Location display names
+// Noms d'affichage des lieux
 export const LOCATION_NAMES: Record<LocationType, string> = {
-  cetus: 'Cetus (Plains of Eidolon)',
+  cetus: 'Cetus (Plaines d\'Eidolon)',
   vallis: 'Fortuna (Orb Vallis)',
-  cambion: 'Deimos (Cambion Drift)',
-  earth: 'Earth',
+  cambion: 'Deimos (Dérive de Cambion)',
+  earth: 'Terre',
 };
 
 // Location emojis for Discord embeds
