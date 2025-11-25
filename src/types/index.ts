@@ -17,7 +17,7 @@ export interface CycleInfo {
   shortDesc: string; // Short description for embeds
 }
 
-// Full cycle data from WarframeStat API
+// Full cycle data from WarframeStat API (deprecated - API is down)
 export interface WarframeStatCycle {
   id: string;
   expiry: string; // ISO date string
@@ -25,6 +25,25 @@ export interface WarframeStatCycle {
   isDay?: boolean; // For Cetus
   state?: string; // For Vallis/Cambion
   timeLeft?: string;
+}
+
+// Tenno Tools API cycle data structure
+// This is the new API we use since WarframeStat is no longer available
+export interface TennoToolsCycle {
+  id: string; // 'cetus', 'fortuna', 'earth'
+  start: number; // Unix timestamp when cycle pattern started
+  length: number; // Total cycle length in seconds
+  dayStart: number; // Seconds into cycle when day starts
+  dayEnd: number; // Seconds into cycle when day ends
+}
+
+// Tenno Tools API response structure
+export interface TennoToolsResponse {
+  time: number; // Current Unix timestamp
+  daynight: {
+    time: number;
+    data: TennoToolsCycle[];
+  };
 }
 
 // Stored state for cycle tracking

@@ -11,8 +11,10 @@ export const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN || '';
 // Optional: Application ID (for future features)
 export const APPLICATION_ID = process.env.APPLICATION_ID || '';
 
-// WarframeStat API endpoint
-export const WARFRAMESTAT_API = 'https://api.warframestat.us/pc';
+// Tenno Tools API endpoint - PC platform worldstate
+// Using Tenno Tools as WarframeStat API is no longer available (404 errors)
+// This API provides cycle data in the 'daynight' object
+export const WARFRAMESTAT_API = 'https://api.tenno.tools/worldstate/pc';
 
 // Check interval (5 minutes in milliseconds)
 export const CHECK_INTERVAL = 10 * 60 * 1000;

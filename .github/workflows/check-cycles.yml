@@ -20,18 +20,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      # Setup Node.js environment
+      # Setup Node.js environment with caching
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
       
-      # Install dependencies
+      # Cache TypeScript build output
+      - name: Cache TypeScript build
+        uses: actions/cache@v3
+        with:
+          path: dist
+          key: ${{ runner.os }}-dist-${{ hashFiles('src/**/*.ts', 'tsconfig.json') }}
+          restore-keys: |
+            ${{ runner.os }}-dist-
+      
+      # Install dependencies (uses npm cache from setup-node)
       - name: Install dependencies
         run: npm ci
       
-      # Build TypeScript files
+      # Build TypeScript files (will use cache if available)
       - name: Build TypeScript
         run: npm run build
       

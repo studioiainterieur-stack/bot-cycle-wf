@@ -1,18 +1,19 @@
 /**
  * Warframe API service
- * Fetches cycle data from WarframeStat API for all locations
+ * Fetches cycle data from Tenno Tools API for all locations
+ * (Previously used WarframeStat API, but it's no longer available)
  */
 
-import { CycleInfo, LocationType, WarframeStatCycle } from '../types/index.js';
+import { CycleInfo, LocationType, TennoToolsCycle, TennoToolsResponse } from '../types/index.js';
 import { WARFRAMESTAT_API } from '../config.js';
 
 /**
- * Fetch all cycle data from WarframeStat API
- * Returns cycle information for Cetus, Vallis, Cambion, and Earth
+ * Fetch all cycle data from Tenno Tools API
+ * Returns cycle information for Cetus, Vallis (Fortuna), and Earth
  */
 export async function fetchAllCycles(): Promise<CycleInfo[]> {
   try {
-    // Fetch data from WarframeStat API with proper headers
+    // Fetch data from Tenno Tools API with proper headers
     const response = await fetch(WARFRAMESTAT_API, {
       headers: {
         'User-Agent': 'Warframe-Cycle-Bot/1.0 (Discord Bot)',
@@ -24,29 +25,20 @@ export async function fetchAllCycles(): Promise<CycleInfo[]> {
       throw new Error(`API request failed: ${response.status} ${response.statusText}`);
     }
     
-    const data = await response.json();
+    const data: TennoToolsResponse = await response.json();
     
     // Parse each location's cycle data
     const cycles: CycleInfo[] = [];
     
-    // Cetus (Plains of Eidolon) - uses cetusCycle
-    if (data.cetusCycle) {
-      cycles.push(parseCetusCycle(data.cetusCycle));
-    }
+    // Get current time from API
+    const currentTime = data.daynight.time;
     
-    // Vallis (Orb Vallis) - uses vallisCycle
-    if (data.vallisCycle) {
-      cycles.push(parseVallisCycle(data.vallisCycle));
-    }
-    
-    // Cambion Drift (Deimos) - uses cambionCycle
-    if (data.cambionCycle) {
-      cycles.push(parseCambionCycle(data.cambionCycle));
-    }
-    
-    // Earth - uses earthCycle
-    if (data.earthCycle) {
-      cycles.push(parseEarthCycle(data.earthCycle));
+    // Process each cycle in the daynight data
+    for (const cycleData of data.daynight.data) {
+      const cycleInfo = parseTennoToolsCycle(cycleData, currentTime);
+      if (cycleInfo) {
+        cycles.push(cycleInfo);
+      }
     }
     
     return cycles;
@@ -57,69 +49,110 @@ export async function fetchAllCycles(): Promise<CycleInfo[]> {
 }
 
 /**
- * Parse Cetus cycle data
- * Cetus has simple day/night cycles
+ * Parse Tenno Tools cycle data
+ * Calculates current state (day/night) and time remaining based on cycle patterns
  */
-function parseCetusCycle(data: WarframeStatCycle): CycleInfo {
-  const isDay = data.isDay ?? false;
+function parseTennoToolsCycle(data: TennoToolsCycle, currentTime: number): CycleInfo | null {
+  // Map Tenno Tools IDs to our location types
+  const locationMap: Record<string, LocationType> = {
+    'cetus': 'cetus',
+    'fortuna': 'vallis',
+    'earth': 'earth',
+  };
+  
+  const locationId = locationMap[data.id];
+  if (!locationId) {
+    console.warn(`Unknown location ID: ${data.id}`);
+    return null;
+  }
+  
+  // Calculate current position in the cycle
+  const elapsedSinceStart = currentTime - data.start;
+  const positionInCycle = elapsedSinceStart % data.length;
+  
+  // Determine if it's day or night based on position in cycle
+  const isDay = positionInCycle >= data.dayStart && positionInCycle < data.dayEnd;
+  
+  // Calculate time until next transition
+  let timeUntilTransition: number;
+  let nextIsDay: boolean;
+  
+  if (isDay) {
+    // Currently day, calculate time until night
+    timeUntilTransition = data.dayEnd - positionInCycle;
+    nextIsDay = false;
+  } else if (positionInCycle < data.dayStart) {
+    // Currently night (before day starts)
+    timeUntilTransition = data.dayStart - positionInCycle;
+    nextIsDay = true;
+  } else {
+    // Currently night (after day ends)
+    timeUntilTransition = data.length - positionInCycle + data.dayStart;
+    nextIsDay = true;
+  }
+  
+  // Convert seconds to human-readable format
+  const timeLeft = formatTimeLeft(timeUntilTransition);
+  
+  // Calculate expiry timestamp
+  const expiryTimestamp = currentTime + timeUntilTransition;
+  const expiry = new Date(expiryTimestamp * 1000); // Convert to milliseconds
+  
+  // Create short description based on location and state
+  const shortDesc = getShortDescription(locationId, isDay);
   
   return {
-    id: 'cetus',
+    id: locationId,
     state: isDay ? 'day' : 'night',
-    timeLeft: data.timeLeft || 'Unknown',
-    expiry: new Date(data.expiry),
-    shortDesc: isDay ? 'Day time in the Plains' : 'Night time - Eidolons active!',
+    timeLeft,
+    expiry,
+    shortDesc,
   };
 }
 
 /**
- * Parse Vallis (Orb Vallis) cycle data
- * Vallis has warm/cold cycles (we map warm=day, cold=night)
+ * Format time in seconds to human-readable string
+ * Examples: "2h 30m", "45m", "30s"
  */
-function parseVallisCycle(data: WarframeStatCycle): CycleInfo {
-  const state = data.state?.toLowerCase() || '';
-  const isWarm = state === 'warm';
+function formatTimeLeft(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
   
-  return {
-    id: 'vallis',
-    state: isWarm ? 'day' : 'night',
-    timeLeft: data.timeLeft || 'Unknown',
-    expiry: new Date(data.expiry),
-    shortDesc: isWarm ? 'Warm cycle in Orb Vallis' : 'Cold cycle in Orb Vallis',
-  };
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  } else if (minutes > 0) {
+    return `${minutes}m ${secs}s`;
+  } else {
+    return `${secs}s`;
+  }
 }
 
 /**
- * Parse Cambion Drift cycle data
- * Cambion has fass/vome cycles (we map fass=day, vome=night)
+ * Get short description for location and state
+ * Used in Discord embeds
  */
-function parseCambionCycle(data: WarframeStatCycle): CycleInfo {
-  const state = data.state?.toLowerCase() || '';
-  const isFass = state === 'fass';
-  
-  return {
-    id: 'cambion',
-    state: isFass ? 'day' : 'night',
-    timeLeft: data.timeLeft || 'Unknown',
-    expiry: new Date(data.expiry),
-    shortDesc: isFass ? 'Fass cycle - Wyrm tokens' : 'Vome cycle - Fass tokens',
+function getShortDescription(location: LocationType, isDay: boolean): string {
+  const descriptions: Record<LocationType, { day: string; night: string }> = {
+    cetus: {
+      day: 'Day time in the Plains',
+      night: 'Night time - Eidolons active!',
+    },
+    vallis: {
+      day: 'Warm cycle in Orb Vallis',
+      night: 'Cold cycle in Orb Vallis',
+    },
+    cambion: {
+      day: 'Fass cycle - Wyrm tokens',
+      night: 'Vome cycle - Fass tokens',
+    },
+    earth: {
+      day: 'Day time on Earth',
+      night: 'Night time on Earth',
+    },
   };
-}
-
-/**
- * Parse Earth cycle data
- * Earth has standard day/night cycles
- */
-function parseEarthCycle(data: WarframeStatCycle): CycleInfo {
-  const isDay = data.isDay ?? false;
   
-  return {
-    id: 'earth',
-    state: isDay ? 'day' : 'night',
-    timeLeft: data.timeLeft || 'Unknown',
-    expiry: new Date(data.expiry),
-    shortDesc: isDay ? 'Day time on Earth' : 'Night time on Earth',
-  };
+  return isDay ? descriptions[location].day : descriptions[location].night;
 }
 
 /**
@@ -129,4 +162,3 @@ export async function fetchCycleForLocation(location: LocationType): Promise<Cyc
   const cycles = await fetchAllCycles();
   return cycles.find(c => c.id === location) || null;
 }
-
