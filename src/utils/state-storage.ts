@@ -9,9 +9,9 @@ import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 // Get the project root directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const PROJECT_ROOT = join(__dirname, '..', '..');
+// Use process.cwd() to get the actual working directory instead of relative paths
+// This ensures the file is saved at the project root, not in dist/
+const PROJECT_ROOT = process.cwd();
 const STATE_FILE = join(PROJECT_ROOT, '.cycle-states.json');
 
 /**

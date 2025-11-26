@@ -30,8 +30,9 @@ export async function fetchAllCycles(): Promise<CycleInfo[]> {
     // Parse each location's cycle data
     const cycles: CycleInfo[] = [];
     
-    // Get current time from API
-    const currentTime = data.daynight.time;
+    // Use system time instead of API time (API time is cached and unreliable)
+    // API returns timestamps in seconds, so we convert Date.now() to seconds
+    const currentTime = Math.floor(Date.now() / 1000);
     
     // Process each cycle in the daynight data
     for (const cycleData of data.daynight.data) {
@@ -39,6 +40,22 @@ export async function fetchAllCycles(): Promise<CycleInfo[]> {
       if (cycleInfo) {
         cycles.push(cycleInfo);
       }
+    }
+    
+    // Add Cambion Drift (Deimos) cycle manually
+    // API doesn't provide this, so we use hardcoded cycle parameters
+    // Cycle identique à Cetus : 150 min total (100 min Fass / 50 min Vome)
+    const cambionCycle: TennoToolsCycle = {
+      id: 'cambion',
+      start: 1598908800,  // 1 septembre 2020 00:00 UTC (lancement de Deimos)
+      length: 9000,        // 150 minutes (2h30) en secondes
+      dayStart: 3000,      // Fass commence à 50 minutes (après Vome)
+      dayEnd: 9000,        // Fass termine à 150 minutes (durée : 100 min)
+    };
+    
+    const cambionInfo = parseTennoToolsCycle(cambionCycle, currentTime);
+    if (cambionInfo) {
+      cycles.push(cambionInfo);
     }
     
     return cycles;
@@ -58,6 +75,7 @@ function parseTennoToolsCycle(data: TennoToolsCycle, currentTime: number): Cycle
     'cetus': 'cetus',
     'fortuna': 'vallis',
     'earth': 'earth',
+    'cambion': 'cambion',
   };
   
   const locationId = locationMap[data.id];

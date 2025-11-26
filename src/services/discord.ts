@@ -78,6 +78,20 @@ export async function sendCycleChangeNotification(cycle: CycleInfo): Promise<voi
 }
 
 /**
+ * Obtenir le nom du cycle selon le lieu
+ * Retourne les vrais noms : Fass/Vome, Chaud/Froid, Jour/Nuit
+ */
+function getCycleStateName(locationId: string, state: string): string {
+  if (locationId === 'cambion') {
+    return state === 'day' ? '🔥 Fass' : '🌊 Vome';
+  } else if (locationId === 'vallis') {
+    return state === 'day' ? '☀️ Chaud' : '❄️ Froid';
+  } else {
+    return state === 'day' ? '☀️ Jour' : '🌙 Nuit';
+  }
+}
+
+/**
  * Créer un embed Discord pour un changement de cycle
  * L'embed est formaté avec des couleurs, emojis et informations pertinentes
  * Amélioré avec des médias riches (thumbnails, images, infos auteur, etc.)
@@ -87,8 +101,16 @@ function createCycleEmbed(cycle: CycleInfo): DiscordEmbed {
   const emoji = LOCATION_EMOJIS[cycle.id];
   const color = EMBED_COLORS[cycle.state];
   
-  // Créer le titre basé sur l'état
-  const stateText = cycle.state === 'day' ? '☀️ Jour' : '🌙 Nuit';
+  // Créer le titre basé sur l'état et le lieu
+  // Utilise les vrais noms : Fass/Vome pour Cambion, Chaud/Froid pour Vallis
+  let stateText: string;
+  if (cycle.id === 'cambion') {
+    stateText = cycle.state === 'day' ? '🔥 Fass' : '🌊 Vome';
+  } else if (cycle.id === 'vallis') {
+    stateText = cycle.state === 'day' ? '☀️ Chaud' : '❄️ Froid';
+  } else {
+    stateText = cycle.state === 'day' ? '☀️ Jour' : '🌙 Nuit';
+  }
   
   // Images haute qualité pour chaque lieu et état
   // URLs directes du site officiel Warframe et du Wiki
@@ -139,8 +161,8 @@ function createCycleEmbed(cycle: CycleInfo): DiscordEmbed {
         inline: true,
       },
       {
-        name: `${cycle.state === 'day' ? '☀️' : '🌙'} Cycle Actuel`,
-        value: cycle.state === 'day' ? 'Jour' : 'Nuit',
+        name: '🔄 Cycle Actuel',
+        value: getCycleStateName(cycle.id, cycle.state),
         inline: true,
       },
       {
