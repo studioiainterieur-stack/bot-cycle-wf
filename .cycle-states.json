@@ -1,27 +1,27 @@
 {
-  "lastUpdate": "2025-11-29T17:32:06.871Z",
+  "lastUpdate": "2025-11-29T17:43:49.812Z",
   "cetus": {
     "location": "cetus",
-    "currentState": "night",
-    "lastCheck": "2025-11-29T17:32:06.871Z",
-    "expiry": "2025-11-29T17:41:19.049Z"
+    "currentState": "day",
+    "lastCheck": "2025-11-29T17:43:49.812Z",
+    "expiry": "2025-11-29T19:21:18.299Z"
   },
   "vallis": {
     "location": "vallis",
     "currentState": "night",
-    "lastCheck": "2025-11-29T17:32:06.871Z",
-    "expiry": "2025-11-29T17:33:44.000Z"
+    "lastCheck": "2025-11-29T17:43:49.812Z",
+    "expiry": "2025-11-29T18:00:24.000Z"
   },
   "earth": {
     "location": "earth",
-    "currentState": "night",
-    "lastCheck": "2025-11-29T17:32:06.871Z",
-    "expiry": "2025-11-29T17:41:19.049Z"
+    "currentState": "day",
+    "lastCheck": "2025-11-29T17:43:49.812Z",
+    "expiry": "2025-11-29T19:21:18.299Z"
   },
   "cambion": {
     "location": "cambion",
     "currentState": "night",
-    "lastCheck": "2025-11-29T17:32:06.871Z",
+    "lastCheck": "2025-11-29T17:43:49.812Z",
     "expiry": "2025-11-29T18:10:00.000Z"
   }
 }
