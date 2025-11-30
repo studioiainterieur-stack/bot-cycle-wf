@@ -1,12 +1,12 @@
 # GitHub Actions workflow to check Warframe cycles
-# Runs every 5 minutes and sends Discord notifications when cycles change
+# Runs every 15 minutes and updates Discord messages when cycles change
 
 name: Check Warframe Cycles
 
 on:
-  # Run every 5 minutes
+  # Run every 15 minutes
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '*/15 * * * *'
   
   # Allow manual trigger from GitHub UI
   workflow_dispatch:
@@ -14,40 +14,56 @@ on:
 jobs:
   check-cycles:
     runs-on: ubuntu-latest
+    
+    # Required permissions to commit state changes back to repo
     permissions:
-      contents: write  # ← AJOUTER CETTE LIGNE
+      contents: write
     
     steps:
+      # ========================================================================
       # Checkout the repository code
-      - name: Checkout code
+      # ========================================================================
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
       
+      # ========================================================================
       # Setup Node.js environment with caching
-      - name: Setup Node.js
+      # ========================================================================
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
       
+      # ========================================================================
       # Install dependencies (uses npm cache from setup-node)
-      - name: Install dependencies
+      # ========================================================================
+      - name: 📦 Install dependencies
         run: npm ci
       
-      # Build TypeScript files (will use cache if available)
-      - name: Build TypeScript
+      # ========================================================================
+      # Build TypeScript files
+      # ========================================================================
+      - name: 🔨 Build TypeScript
         run: npm run build
       
+      # ========================================================================
       # Run the cycle checker
-      - name: Check Warframe cycles
+      # ========================================================================
+      - name: 🔍 Check Warframe cycles
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # Discord bot token (required)
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
         run: npm run check
       
+      # ========================================================================
       # Commit state changes back to repository
-      - name: Commit state changes
+      # This saves the current states for the next run
+      # ========================================================================
+      - name: 💾 Commit state changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add .cycle-states.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "Update cycle states [skip ci]"
+          git add states/cycle-states.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "🤖 Update cycle states [skip ci]"
           git push
